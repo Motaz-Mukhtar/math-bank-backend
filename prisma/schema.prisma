@@ -1,0 +1,192 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────
+
+enum Role {
+  STUDENT
+  PARENT
+  ADMIN
+}
+
+enum QuestionType {
+  MCQ           // اختيار من متعدد — current type
+  FILL_BLANK    // أكمل الفراغ
+  SORT_ORDER    // رتّب بالترتيب (drag and sort)
+  MATCHING      // صل بخط
+  VISUAL_MCQ    // اختر الشكل الصحيح (SVG options)
+  CLOCK_READ    // قراءة الساعة
+}
+
+
+enum QuizLevel {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum QuizCategory {
+  ADDITION
+  SUBTRACTION
+  MULTIPLICATION
+  DIVISION
+  COMPARISON
+  GEOMETRY
+  FRACTIONS
+  MEASUREMENT
+  TIME
+  PLACE_VALUE
+  PATTERNS
+  DATA
+}
+
+// ─── Core User ───────────────────────────────────────
+
+model User {
+  id               String    @id @default(uuid())
+  fullName         String
+  email            String    @unique
+  phone            String?
+  passwordHash     String
+  role             Role      @default(STUDENT)
+  academicNumber   String?   @unique
+  isVerified       Boolean   @default(false)
+  verifyCode       String?
+  verifyCodeExp    DateTime?
+  resetCode        String?
+  resetCodeExp     DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Relations
+  points           Points?
+  quizSessions     QuizSession[]
+  wheelSessions    WheelSession[]
+  parentLinks      ParentChild[] @relation("ParentSide")
+  childLinks       ParentChild[] @relation("ChildSide")
+}
+
+// ─── Parent–Child Link ───────────────────────────────
+
+model ParentChild {
+  id        String   @id @default(uuid())
+  parent    User     @relation("ParentSide", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId  String
+  child     User     @relation("ChildSide",  fields: [childId],  references: [id], onDelete: Cascade)
+  childId   String
+  createdAt DateTime @default(now())
+
+  @@unique([parentId, childId])
+}
+
+// ─── Points Bank ─────────────────────────────────────
+
+model Points {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @unique
+  total     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Video Categories ────────────────────────────────
+
+model VideoCategory {
+  id          String   @id @default(uuid())
+  name        String
+  description String?  @db.Text
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  videos      Video[]
+}
+
+// ─── Videos ──────────────────────────────────────────
+
+model Video {
+  id          String        @id @default(uuid())
+  title       String
+  description String?       @db.Text
+  url         String
+  sortOrder   Int           @default(0)
+  categoryId  String
+  category    VideoCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+// ─── Questions ───────────────────────────────────────
+
+model Question {
+  id        String       @id @default(uuid())
+  text      String       @db.Text
+  options   Json
+  answer    String
+  category  QuizCategory
+  level     QuizLevel
+  points    Int
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  quizItems     QuizSessionItem[]
+  wheelItems    WheelSessionItem[]
+}
+
+// ─── Topic Quiz Sessions ──────────────────────────────
+
+model QuizSession {
+  id          String       @id @default(uuid())
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  category    QuizCategory
+  level       QuizLevel
+  totalScore  Int          @default(0)
+  isComplete  Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  completedAt DateTime?
+
+  items       QuizSessionItem[]
+}
+
+model QuizSessionItem {
+  id           String      @id @default(uuid())
+  session      QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId    String
+  question     Question    @relation(fields: [questionId], references: [id])
+  questionId   String
+  userAnswer   String
+  isCorrect    Boolean
+  pointsEarned Int
+}
+
+// ─── Wheel Quiz Sessions ──────────────────────────────
+
+model WheelSession {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime @default(now())
+
+  items     WheelSessionItem[]
+}
+
+model WheelSessionItem {
+  id           String       @id @default(uuid())
+  session      WheelSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId    String
+  question     Question     @relation(fields: [questionId], references: [id])
+  questionId   String
+  category     QuizCategory
+  userAnswer   String
+  isCorrect    Boolean
+  pointsEarned Int
+}
