@@ -127,15 +127,16 @@ model Video {
 // ─── Questions ───────────────────────────────────────
 
 model Question {
-  id        String       @id @default(uuid())
-  text      String       @db.Text
-  options   Json
-  answer    String
-  category  QuizCategory
-  level     QuizLevel
-  points    Int
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id           String       @id @default(uuid())
+  text         String       @db.Text
+  questionType QuestionType @default(MCQ)
+  options      Json
+  answer       String
+  category     QuizCategory
+  level        QuizLevel
+  points       Int
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   quizItems     QuizSessionItem[]
   wheelItems    WheelSessionItem[]

@@ -1,6 +1,7 @@
 import { QuizRepository } from './quiz.repository';
 import { StartSessionDto, SubmitAnswerDto } from './quiz.schema';
 import { ApiError } from '../../utils/ApiError';
+import { validateAnswer } from './quiz.validator';
 
 // Quiz session always has 10 questions
 const QUIZ_SESSION_LENGTH = 10;
@@ -145,9 +146,9 @@ export class QuizService {
       throw new ApiError(400, 'تم الإجابة على هذا السؤال بالفعل');
     }
 
-    // Check answer
-    const isCorrect = data.userAnswer.trim() === question.answer.trim();
-    const pointsEarned = isCorrect ? POINTS_BY_LEVEL[question.level] : 0;
+    // Check answer using type-aware validator
+    const isCorrect = validateAnswer(question.questionType, data.userAnswer, question.answer);
+    const pointsEarned = isCorrect ? question.points : 0;
 
     // Save quiz item and update points (atomic transaction)
     const { newTotal, sessionScore } = await this.repository.saveQuizItem({

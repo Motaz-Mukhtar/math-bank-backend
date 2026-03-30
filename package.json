@@ -7,6 +7,9 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio"
@@ -21,7 +24,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@prisma/client": "^5.9.1",
+    "@prisma/client": "^5.19.1",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -33,7 +36,6 @@
     "morgan": "^1.10.0",
     "mysql2": "^3.9.1",
     "nodemailer": "^6.9.9",
-    "prisma": "^5.9.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -45,7 +47,10 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.11.16",
     "@types/nodemailer": "^6.4.14",
+    "@vitest/ui": "^4.1.2",
+    "prisma": "^5.19.1",
     "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^4.1.2"
   }
 }
