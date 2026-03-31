@@ -62,7 +62,8 @@ export class QuizService {
       question: {
         id: firstQuestion.id,
         text: firstQuestion.text,
-        options: firstQuestion.options as string[],
+        questionType: firstQuestion.questionType,
+        options: firstQuestion.options,
         category: firstQuestion.category,
         level: firstQuestion.level,
         points: firstQuestion.points,
@@ -107,7 +108,8 @@ export class QuizService {
       question: {
         id: nextQuestion.id,
         text: nextQuestion.text,
-        options: nextQuestion.options as string[],
+        questionType: nextQuestion.questionType,
+        options: nextQuestion.options,
         category: nextQuestion.category,
         level: nextQuestion.level,
         points: nextQuestion.points,

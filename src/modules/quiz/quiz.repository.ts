@@ -54,6 +54,7 @@ export class QuizRepository {
   /**
    * Get random questions for a specific category and level
    * Limited to specified count
+   * Note: Prisma automatically parses the 'options' field from JSON to object
    */
   async getRandomQuestions(
     category: QuizCategory,

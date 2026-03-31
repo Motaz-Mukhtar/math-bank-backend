@@ -3,7 +3,7 @@ import { AdminController } from './admin.controller';
 import { authMiddleware } from '../../middleware/auth.middleware';
 import { requireRole } from '../../middleware/role.middleware';
 import { validate } from '../../middleware/validate.middleware';
-import { updateUserSchema } from './admin.schema';
+import { updateUserSchema, createQuestionSchema, updateQuestionSchema } from './admin.schema';
 import { Role } from '@prisma/client';
 
 const router = Router();
@@ -25,5 +25,11 @@ router.get('/users', controller.getUsers);
 router.get('/users/export', controller.exportUsers);
 router.put('/users/:id', validate(updateUserSchema), controller.updateUser);
 router.delete('/users/:id', controller.deleteUser);
+
+// Question management
+router.post('/questions', validate(createQuestionSchema), controller.createQuestion);
+router.put('/questions/:id', validate(updateQuestionSchema), controller.updateQuestion);
+router.get('/questions', controller.getQuestions);
+router.delete('/questions/:id', controller.deleteQuestion);
 
 export default router;

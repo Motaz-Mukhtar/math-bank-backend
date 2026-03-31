@@ -1,5 +1,5 @@
 import { AdminRepository } from './admin.repository';
-import { UpdateUserDto, GetUsersQuery, ExportUsersQuery } from './admin.schema';
+import { UpdateUserDto, GetUsersQuery, ExportUsersQuery, CreateQuestionDto, UpdateQuestionDto, GetQuestionsQuery } from './admin.schema';
 import { ApiError } from '../../utils/ApiError';
 import { Role } from '@prisma/client';
 
@@ -117,5 +117,114 @@ export class AdminService {
    */
   async exportUsers(query: ExportUsersQuery) {
     return this.repository.exportUsers(query.type);
+  }
+
+  // ─── Question Management ─────────────────────────────────────────────────────
+
+  /**
+   * Create new question
+   */
+  async createQuestion(dto: CreateQuestionDto) {
+    // Prisma automatically serializes options to JSON
+    const question = await this.repository.createQuestion(dto);
+
+    return {
+      id: question.id,
+      text: question.text,
+      questionType: question.questionType,
+      options: question.options,
+      answer: question.answer,
+      category: question.category,
+      level: question.level,
+      points: question.points,
+      createdAt: question.createdAt,
+      updatedAt: question.updatedAt,
+    };
+  }
+
+  /**
+   * Update existing question
+   */
+  async updateQuestion(id: string, dto: UpdateQuestionDto) {
+    // Verify question exists
+    const existingQuestion = await this.repository.getQuestionById(id);
+    if (!existingQuestion) {
+      throw new ApiError(404, 'السؤال غير موجود');
+    }
+
+    // Update question (Prisma handles JSON serialization)
+    const question = await this.repository.updateQuestion(id, dto);
+
+    return {
+      id: question.id,
+      text: question.text,
+      questionType: question.questionType,
+      options: question.options,
+      answer: question.answer,
+      category: question.category,
+      level: question.level,
+      points: question.points,
+      createdAt: question.createdAt,
+      updatedAt: question.updatedAt,
+    };
+  }
+
+  /**
+   * Get paginated questions with filters
+   */
+  async getQuestionsPaginated(query: GetQuestionsQuery) {
+    const page = parseInt(query.page) || 1;
+    const limit = parseInt(query.limit) || 10;
+
+    if (page < 1) {
+      throw new ApiError(400, 'رقم الصفحة يجب أن يكون أكبر من 0');
+    }
+
+    if (limit < 1 || limit > 100) {
+      throw new ApiError(400, 'الحد الأقصى يجب أن يكون بين 1 و 100');
+    }
+
+    const result = await this.repository.getQuestionsPaginated(
+      page,
+      limit,
+      query.questionType,
+      query.category,
+      query.level
+    );
+
+    // Prisma automatically parses options from JSON
+    return {
+      questions: result.questions.map(q => ({
+        id: q.id,
+        text: q.text,
+        questionType: q.questionType,
+        options: q.options,
+        answer: q.answer,
+        category: q.category,
+        level: q.level,
+        points: q.points,
+        createdAt: q.createdAt,
+        updatedAt: q.updatedAt,
+      })),
+      total: result.total,
+      page,
+      limit,
+      totalPages: Math.ceil(result.total / limit),
+    };
+  }
+
+  /**
+   * Delete question
+   */
+  async deleteQuestion(id: string) {
+    try {
+      await this.repository.deleteQuestion(id);
+      return { message: 'تم حذف السؤال بنجاح' };
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        throw new ApiError(404, 'السؤال غير موجود');
+      }
+      throw error;
+    }
   }
 }

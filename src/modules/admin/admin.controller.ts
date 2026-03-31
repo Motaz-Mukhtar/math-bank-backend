@@ -125,4 +125,58 @@ export class AdminController {
       new ApiResponse(200, users, 'تم تصدير المستخدمين بنجاح')
     );
   });
+
+  // ─── Question Management ─────────────────────────────────────────────────────
+
+  /**
+   * POST /api/v1/admin/questions
+   * Create new question
+   */
+  createQuestion = asyncHandler(async (req: Request, res: Response) => {
+    const question = await this.service.createQuestion(req.body);
+
+    res.status(201).json(
+      new ApiResponse(201, question, 'تم إنشاء السؤال بنجاح')
+    );
+  });
+
+  /**
+   * PUT /api/v1/admin/questions/:id
+   * Update existing question
+   */
+  updateQuestion = asyncHandler(async (req: Request, res: Response) => {
+    const questionId = req.params.id;
+
+    const question = await this.service.updateQuestion(questionId, req.body);
+
+    res.json(
+      new ApiResponse(200, question, 'تم تحديث السؤال بنجاح')
+    );
+  });
+
+  /**
+   * GET /api/v1/admin/questions
+   * Get paginated questions with filters
+   */
+  getQuestions = asyncHandler(async (req: Request, res: Response) => {
+    const result = await this.service.getQuestionsPaginated(req.query as any);
+
+    res.json(
+      new ApiResponse(200, result, 'تم الحصول على قائمة الأسئلة بنجاح')
+    );
+  });
+
+  /**
+   * DELETE /api/v1/admin/questions/:id
+   * Delete question
+   */
+  deleteQuestion = asyncHandler(async (req: Request, res: Response) => {
+    const questionId = req.params.id;
+
+    const result = await this.service.deleteQuestion(questionId);
+
+    res.json(
+      new ApiResponse(200, result, 'تم حذف السؤال بنجاح')
+    );
+  });
 }

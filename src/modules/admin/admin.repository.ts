@@ -1,6 +1,6 @@
-import { PrismaClient, Role } from '@prisma/client';
+import { PrismaClient, Role, QuestionType, QuizCategory, QuizLevel } from '@prisma/client';
 import { prisma } from '../../config/database';
-import { UpdateUserDto } from './admin.schema';
+import { UpdateUserDto, CreateQuestionDto, UpdateQuestionDto } from './admin.schema';
 
 export class AdminRepository {
   public prisma: PrismaClient;
@@ -384,5 +384,111 @@ export class AdminRepository {
       isVerified: user.isVerified,
       createdAt: user.createdAt,
     }));
+  }
+
+  // ─── Question Management ─────────────────────────────────────────────────────
+
+  /**
+   * Create new question
+   * Prisma automatically serializes options to JSON
+   */
+  async createQuestion(dto: CreateQuestionDto) {
+    return this.prisma.question.create({
+      data: {
+        text: dto.text,
+        questionType: dto.questionType,
+        options: dto.options as any,
+        answer: dto.answer,
+        category: dto.category,
+        level: dto.level,
+        points: dto.points,
+      },
+    });
+  }
+
+  /**
+   * Get question by ID
+   */
+  async getQuestionById(id: string) {
+    return this.prisma.question.findUnique({
+      where: { id },
+    });
+  }
+
+  /**
+   * Update existing question
+   * Prisma automatically serializes options to JSON
+   */
+  async updateQuestion(id: string, dto: UpdateQuestionDto) {
+    const updateData: any = {};
+
+    if (dto.text !== undefined) updateData.text = dto.text;
+    if (dto.questionType !== undefined) updateData.questionType = dto.questionType;
+    if (dto.options !== undefined) updateData.options = dto.options;
+    if (dto.answer !== undefined) updateData.answer = dto.answer;
+    if (dto.category !== undefined) updateData.category = dto.category;
+    if (dto.level !== undefined) updateData.level = dto.level;
+    if (dto.points !== undefined) updateData.points = dto.points;
+
+    return this.prisma.question.update({
+      where: { id },
+      data: updateData,
+    });
+  }
+
+  /**
+   * Get paginated questions with optional filters
+   * Prisma automatically parses options from JSON
+   */
+  async getQuestionsPaginated(
+    page: number,
+    limit: number,
+    questionType?: QuestionType,
+    category?: QuizCategory,
+    level?: QuizLevel
+  ) {
+    const skip = (page - 1) * limit;
+
+    // Build where clause
+    const where: any = {};
+
+    if (questionType) {
+      where.questionType = questionType;
+    }
+
+    if (category) {
+      where.category = category;
+    }
+
+    if (level) {
+      where.level = level;
+    }
+
+    // Get total count
+    const total = await this.prisma.question.count({ where });
+
+    // Get questions
+    const questions = await this.prisma.question.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return {
+      questions,
+      total,
+    };
+  }
+
+  /**
+   * Delete question
+   */
+  async deleteQuestion(id: string) {
+    return this.prisma.question.delete({
+      where: { id },
+    });
   }
 }
