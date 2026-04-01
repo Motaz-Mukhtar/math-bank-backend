@@ -116,8 +116,8 @@ export class AdminRepository {
       where: { role: Role.STUDENT },
     });
 
-    const linkingRate = totalStudents > 0 
-      ? Math.round((linkedStudents / totalStudents) * 100) 
+    const linkingRate = totalStudents > 0
+      ? Math.round((linkedStudents / totalStudents) * 100)
       : 0;
 
     return {
@@ -217,6 +217,11 @@ export class AdminRepository {
       select: {
         total: true,
       },
+      where: {
+        user: {
+          role: Role.STUDENT
+        }
+      }
     });
 
     // Define ranges

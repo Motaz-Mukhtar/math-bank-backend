@@ -1,5 +1,5 @@
 import { AdminRepository } from './admin.repository';
-import { UpdateUserDto, GetUsersQuery, ExportUsersQuery, CreateQuestionDto, UpdateQuestionDto, GetQuestionsQuery } from './admin.schema';
+import { UpdateUserDto, GetUsersQuery, ExportUsersQuery, CreateQuestionDto, UpdateQuestionDto, GetQuestionsQuery, GetQuestionParam } from './admin.schema';
 import { ApiError } from '../../utils/ApiError';
 import { Role } from '@prisma/client';
 
@@ -210,6 +210,27 @@ export class AdminService {
       page,
       limit,
       totalPages: Math.ceil(result.total / limit),
+    };
+  }
+
+  async getQuestion(params: GetQuestionParam) {
+    const question = await this.repository.getQuestionById(params.id);
+
+    if (!question) {
+      throw new ApiError(404, 'السؤال غير موجود');
+    }
+
+    return {
+      id: question.id,
+      text: question.text,
+      questionType: question.questionType,
+      options: question.options,
+      answer: question.answer,
+      category: question.category,
+      level: question.level,
+      points: question.points,
+      createdAt: question.createdAt,
+      updatedAt: question.updatedAt,
     };
   }
 

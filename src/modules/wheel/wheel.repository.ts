@@ -80,9 +80,7 @@ export class WheelRepository {
         select: { userId: true },
       });
 
-      if (!session) {
-        throw new Error('Session not found');
-      }
+      if (!session) throw new Error('الجلسة غير موجودة');
 
       // Increment user's points
       const updatedPoints = await tx.points.update({

@@ -138,16 +138,22 @@ export const questionSchema = z.discriminatedUnion('questionType', [
 // ─── Session Schemas ─────────────────────────────────────────────────────────
 
 export const startSessionSchema = z.object({
-  category: z.nativeEnum(QuizCategory, {
-    errorMap: () => ({ message: 'فئة السؤال غير صالحة' }),
-  }),
-  level: z.nativeEnum(QuizLevel, {
-    errorMap: () => ({ message: 'مستوى السؤال غير صالح' }),
-  }),
+  category: z.preprocess(
+    (val) => (typeof val === 'string' ? val.toUpperCase() : val),
+    z.nativeEnum(QuizCategory, {
+      errorMap: () => ({ message: 'فئة السؤال غير صالحة' }),
+    }),
+  ),
+  level: z.preprocess(
+    (val) => (typeof val === 'string' ? val.toUpperCase() : val),
+    z.nativeEnum(QuizLevel, {
+      errorMap: () => ({ message: 'مستوى السؤال غير صالح' }),
+    }),
+  ),
 });
 
 export const submitAnswerSchema = z.object({
-  questionId: z.string().uuid('معرف السؤال غير صالح'),
+  // questionId: z.string().uuid('معرف السؤال غير صالح '),
   userAnswer: z.string().min(1, 'الإجابة مطلوبة'),
 });
 

@@ -30,6 +30,7 @@ router.delete('/users/:id', controller.deleteUser);
 router.post('/questions', validate(createQuestionSchema), controller.createQuestion);
 router.put('/questions/:id', validate(updateQuestionSchema), controller.updateQuestion);
 router.get('/questions', controller.getQuestions);
+router.get('/questions/:id', controller.getQuestion);
 router.delete('/questions/:id', controller.deleteQuestion);
 
 export default router;

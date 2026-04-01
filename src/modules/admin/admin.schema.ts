@@ -26,9 +26,9 @@ export const exportUsersSchema = z.object({
 
 export const createQuestionSchema = questionSchema;
 
-export const updateQuestionSchema = questionSchema.partial().extend({
-  id: z.string().uuid('معرف السؤال غير صالح'),
-});
+// export const updateQuestionSchema = questionSchema.partial().extend({
+//   id: z.string().uuid('معرف السؤال غير صالح'),
+// });
 
 export const getQuestionsQuerySchema = z.object({
   page: z.string().optional().default('1'),
@@ -38,6 +38,10 @@ export const getQuestionsQuerySchema = z.object({
   level: z.nativeEnum(QuizLevel).optional(),
 });
 
+export const getQuestionParamSchema = z.object({
+  id: z.string().uuid('معرف السؤال غير صالح'),
+});
+
 export type UpdateUserDto = z.infer<typeof updateUserSchema>;
 export type GetUsersQuery = z.infer<typeof getUsersQuerySchema>;
 export type GetRegistrationChartQuery = z.infer<typeof getRegistrationChartSchema>;
@@ -45,3 +49,4 @@ export type ExportUsersQuery = z.infer<typeof exportUsersSchema>;
 export type CreateQuestionDto = z.infer<typeof createQuestionSchema>;
 export type UpdateQuestionDto = z.infer<typeof updateQuestionSchema>;
 export type GetQuestionsQuery = z.infer<typeof getQuestionsQuerySchema>;
+export type GetQuestionParam = z.infer<typeof getQuestionParamSchema>;

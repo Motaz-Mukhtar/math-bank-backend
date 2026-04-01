@@ -167,6 +167,18 @@ export class AdminController {
   });
 
   /**
+   * GET /api/v1/admin/questions/:id
+   * Get single question details.
+   */
+  getQuestion = asyncHandler(async (req: Request, res: Response) => {
+    const result = await this.service.getQuestion(req.params as any);
+
+    res.json(
+      new ApiResponse(200, result, 'تم الحصول على السؤال بنجاح')
+    );
+  });
+
+  /**
    * DELETE /api/v1/admin/questions/:id
    * Delete question
    */

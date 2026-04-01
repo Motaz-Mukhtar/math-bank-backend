@@ -58,6 +58,7 @@ export class WheelService {
       options: question.options as string[],
       category: question.category,
       level: question.level,
+      questionType: question.questionType,
       points: WHEEL_POINTS_PER_CORRECT, // Always 10 points for wheel
     };
   }
