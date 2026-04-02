@@ -15,8 +15,8 @@ export class ParentService {
    * Validates child is a STUDENT and no duplicate link exists
    */
   async linkChild(parentId: string, data: LinkChildDto) {
-    // Find student by email
-    const child = await this.repository.findUserByEmail(data.childEmail);
+    // Find student by academic number
+    const child = await this.repository.findUserByAcademicNumber(data.academicNumber);
 
     if (!child) throw new ApiError(404, 'الطالب غير موجود');
 

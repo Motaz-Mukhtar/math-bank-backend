@@ -21,6 +21,18 @@ export class ParentRepository {
   }
 
   /**
+   * Find user by academic number
+   */
+  async findUserByAcademicNumber(academicNumber: string) {
+    return this.prisma.user.findUnique({
+      where: { academicNumber },
+      include: {
+        points: true,
+      },
+    });
+  }
+
+  /**
    * Check if parent-child link already exists
    */
   async linkExists(parentId: string, childId: string): Promise<boolean> {

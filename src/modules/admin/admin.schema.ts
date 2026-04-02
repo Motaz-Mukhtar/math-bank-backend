@@ -26,9 +26,17 @@ export const exportUsersSchema = z.object({
 
 export const createQuestionSchema = questionSchema;
 
-// export const updateQuestionSchema = questionSchema.partial().extend({
-//   id: z.string().uuid('معرف السؤال غير صالح'),
-// });
+// ZodDiscriminatedUnion doesn't support .partial(), so we define the update
+// schema as a plain object where every field is optional.
+export const updateQuestionSchema = z.object({
+  text: z.string().min(3).optional(),
+  questionType: z.nativeEnum(QuestionType).optional(),
+  options: z.unknown().optional(),
+  answer: z.string().optional(),
+  category: z.nativeEnum(QuizCategory).optional(),
+  level: z.nativeEnum(QuizLevel).optional(),
+  points: z.number().int().min(1).optional(),
+});
 
 export const getQuestionsQuerySchema = z.object({
   page: z.string().optional().default('1'),
