@@ -234,9 +234,9 @@ export class LeaderboardRepository {
     userId: string,
     days = 7
   ): Promise<Array<{ date: string; total: number }>> {
-    const since = new Date();
-    since.setDate(since.getDate() - (days - 1));
-    since.setHours(0, 0, 0, 0);
+    // Use week start (Saturday) as the starting point for the 7-day history
+    const weekStart = getWeekStart();
+    const since = new Date(weekStart);
 
     const [quizItems, wheelItems] = await Promise.all([
       this.prisma.quizSessionItem.findMany({
@@ -251,7 +251,7 @@ export class LeaderboardRepository {
 
     const dayMap = new Map<string, number>();
 
-    // Pre-fill all days with 0
+    // Pre-fill all days from week start (Saturday) to today
     for (let i = 0; i < days; i++) {
       const d = new Date(since);
       d.setDate(since.getDate() + i);
