@@ -14,7 +14,7 @@ export class VideoCategoryController {
    * GET /api/v1/video-categories
    * Get all categories with nested videos
    */
-  getAll = asyncHandler(async (req: Request, res: Response) => {
+  getAll = asyncHandler(async (_req: Request, res: Response) => {
     const categories = await this.service.getAll();
 
     res.json(

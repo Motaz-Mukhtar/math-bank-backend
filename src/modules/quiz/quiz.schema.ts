@@ -153,7 +153,7 @@ export const startSessionSchema = z.object({
 });
 
 export const submitAnswerSchema = z.object({
-  // questionId: z.string().uuid('معرف السؤال غير صالح '),
+  questionId: z.string().uuid('معرف السؤال غير صالح'),
   userAnswer: z.string().min(1, 'الإجابة مطلوبة'),
 });
 

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Role, QuizCategory } from '@prisma/client';
+import { QuizCategory } from '@prisma/client';
 import { LeaderboardRepository } from './leaderboard.repository';
 import { computeBadgesForLeaderboard, computeBadgesForUser } from './badge.service';
 import { asyncHandler } from '../../utils/asyncHandler';

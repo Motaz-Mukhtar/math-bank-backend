@@ -30,7 +30,7 @@ if (env.NODE_ENV === 'development') {
 }
 
 // Health check endpoint
-app.get('/api/health', (req: Request, res: Response) => {
+app.get('/api/health', (_req: Request, res: Response) => {
   res.json({
     success: true,
     message: 'Math Bank API is running',

@@ -6,13 +6,6 @@ import { validateAnswer } from './quiz.validator';
 // Quiz session always has 10 questions
 const QUIZ_SESSION_LENGTH = 10;
 
-// Points awarded based on level: EASY=5, MEDIUM=10, HARD=15
-const POINTS_BY_LEVEL = {
-  EASY: 5,
-  MEDIUM: 10,
-  HARD: 15,
-};
-
 export class QuizService {
   private repository: QuizRepository;
 
@@ -134,9 +127,7 @@ export class QuizService {
     }
 
     // Get question
-    const question = await this.repository.prisma.question.findUnique({
-      where: { id: data.questionId },
-    });
+    const question = await this.repository.getQuestionById(data.questionId);
 
     if (!question) {
       throw new ApiError(404, 'السؤال غير موجود');

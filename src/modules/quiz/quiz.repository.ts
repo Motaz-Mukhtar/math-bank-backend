@@ -87,6 +87,15 @@ export class QuizRepository {
   }
 
   /**
+   * Get question by ID
+   */
+  async getQuestionById(id: string) {
+    return this.prisma.question.findUnique({
+      where: { id },
+    });
+  }
+
+  /**
    * Save quiz session item (question + answer)
    * Also increments session totalScore and user's points
    */

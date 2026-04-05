@@ -1,7 +1,6 @@
 import { WheelRepository } from './wheel.repository';
 import { SpinDto, SubmitAnswerDto } from './wheel.schema';
 import { ApiError } from '../../utils/ApiError';
-import { QuizCategory } from '@prisma/client';
 
 // Wheel quiz always awards 10 points per correct answer
 const WHEEL_POINTS_PER_CORRECT = 10;
@@ -76,9 +75,7 @@ export class WheelService {
     }
 
     // Get question
-    const question = await this.repository.prisma.question.findUnique({
-      where: { id: data.questionId },
-    });
+    const question = await this.repository.getQuestionById(data.questionId);
 
     if (!question) {
       throw new ApiError(404, 'السؤال غير موجود');

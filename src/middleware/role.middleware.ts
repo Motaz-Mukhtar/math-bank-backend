@@ -3,7 +3,7 @@ import { Role } from '@prisma/client';
 import { ApiError } from '../utils/ApiError';
 
 export const requireRole = (...allowedRoles: Role[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user) {
       throw new ApiError(401, 'غير مصرح');
     }

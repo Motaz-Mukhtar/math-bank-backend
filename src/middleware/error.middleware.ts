@@ -4,9 +4,9 @@ import { env } from '../config/env';
 
 export const errorMiddleware = (
   err: Error,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   if (err instanceof ApiError) {
     return res.status(err.statusCode).json({

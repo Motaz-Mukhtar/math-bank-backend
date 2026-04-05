@@ -77,10 +77,8 @@ async function populateWeeklyTestData() {
         data: {
           userId: student.id,
           category,
-          totalQuestions: 10,
-          correctAnswers: Math.floor(Math.random() * 8) + 3, // 3-10 correct
+          level: 'MEDIUM',
           createdAt: sessionDate,
-          updatedAt: sessionDate,
         },
       });
 
@@ -93,6 +91,7 @@ async function populateWeeklyTestData() {
         items.push({
           sessionId: session.id,
           questionId: `test-question-${q}`,
+          userAnswer: isCorrect ? 'correct' : 'wrong',
           isCorrect,
           pointsEarned,
           timeSpent: Math.floor(Math.random() * 30) + 10, // 10-40 seconds

@@ -57,6 +57,15 @@ export class WheelRepository {
   }
 
   /**
+   * Get question by ID
+   */
+  async getQuestionById(id: string) {
+    return this.prisma.question.findUnique({
+      where: { id },
+    });
+  }
+
+  /**
    * Save wheel session item (question + answer)
    * Also increments user's points total
    */

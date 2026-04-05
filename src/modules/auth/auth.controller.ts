@@ -62,7 +62,7 @@ export class AuthController {
   /**
    * POST /api/v1/auth/refresh
    */
-  refresh = asyncHandler(async (req: Request, res: Response) => {
+  refresh = asyncHandler(async (req: Request, res: Response): Promise<any> => {
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
@@ -105,7 +105,7 @@ export class AuthController {
   /**
    * POST /api/v1/auth/logout
    */
-  logout = asyncHandler(async (req: Request, res: Response) => {
+  logout = asyncHandler(async (_req: Request, res: Response) => {
     res.clearCookie('refreshToken');
 
     res.json(new ApiResponse(200, null, 'تم تسجيل الخروج بنجاح'));

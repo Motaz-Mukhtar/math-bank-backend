@@ -14,7 +14,7 @@ export class AdminController {
    * GET /api/v1/admin/dashboard/stats
    * Get dashboard statistics
    */
-  getDashboardStats = asyncHandler(async (req: Request, res: Response) => {
+  getDashboardStats = asyncHandler(async (_req: Request, res: Response) => {
     const stats = await this.service.getDashboardStats();
 
     res.json(
@@ -26,7 +26,7 @@ export class AdminController {
    * GET /api/v1/admin/dashboard/link-stats
    * Get parent-child link statistics
    */
-  getLinkStats = asyncHandler(async (req: Request, res: Response) => {
+  getLinkStats = asyncHandler(async (_req: Request, res: Response) => {
     const stats = await this.service.getLinkStats();
 
     res.json(
@@ -66,7 +66,7 @@ export class AdminController {
    * GET /api/v1/admin/dashboard/points-distribution
    * Get points distribution for histogram
    */
-  getPointsDistribution = asyncHandler(async (req: Request, res: Response) => {
+  getPointsDistribution = asyncHandler(async (_req: Request, res: Response) => {
     const distribution = await this.service.getPointsDistribution();
 
     res.json(
