@@ -2,12 +2,15 @@ import { ParentRepository } from './parent.repository';
 import { LinkChildDto } from './parent.schema';
 import { ApiError } from '../../utils/ApiError';
 import { Role } from '@prisma/client';
+import { LeaderboardRepository } from '../leaderboard/leaderboard.repository';
 
 export class ParentService {
   private repository: ParentRepository;
+  private leaderboardRepository: LeaderboardRepository;
 
   constructor() {
     this.repository = new ParentRepository();
+    this.leaderboardRepository = new LeaderboardRepository();
   }
 
   /**
@@ -94,8 +97,11 @@ export class ParentService {
     // Get child's rank
     const rank = await this.repository.getChildRank(childId);
 
-    // Get quiz history
-    const quizHistory = await this.repository.getChildQuizHistory(childId);
+    // Get quiz history and points history
+    const [quizHistory, pointsHistory] = await Promise.all([
+      this.repository.getChildQuizHistory(childId),
+      this.leaderboardRepository.getUserPointsHistory(childId, 7),
+    ]);
 
     // Format quiz history
     const formattedHistory = quizHistory.map((session: any) => {
@@ -124,6 +130,7 @@ export class ParentService {
         rank,
       },
       quizHistory: formattedHistory,
+      pointsHistory,
     };
   }
 }
