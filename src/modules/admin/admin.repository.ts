@@ -391,6 +391,44 @@ export class AdminRepository {
     }));
   }
 
+  /**
+   * Get user by ID
+   */
+  async getUserById(id: string) {
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
+  }
+
+  /**
+   * Get parent's linked children (admin view)
+   */
+  async getParentChildren(parentId: string) {
+    const links = await this.prisma.parentChild.findMany({
+      where: { parentId },
+      include: {
+        child: {
+          include: {
+            points: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+    });
+
+    return links.map((link: any) => ({
+      childId: link.child.id,
+      fullName: link.child.fullName,
+      email: link.child.email,
+      academicNumber: link.child.academicNumber,
+      points: link.child.points?.total || 0,
+      rank: link.child.points?.rank || null,
+      createdAt: link.createdAt,
+    }));
+  }
+
   // ─── Question Management ─────────────────────────────────────────────────────
 
   /**

@@ -126,6 +126,20 @@ export class AdminController {
     );
   });
 
+  /**
+   * GET /api/v1/admin/users/:parentId/children
+   * Get parent's linked children (admin view)
+   */
+  getParentChildren = asyncHandler(async (req: Request, res: Response) => {
+    const parentId = req.params.parentId;
+
+    const children = await this.service.getParentChildren(parentId);
+
+    res.json(
+      new ApiResponse(200, children, 'تم الحصول على قائمة الأطفال بنجاح')
+    );
+  });
+
   // ─── Question Management ─────────────────────────────────────────────────────
 
   /**

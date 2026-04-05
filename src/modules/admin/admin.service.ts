@@ -119,6 +119,24 @@ export class AdminService {
     return this.repository.exportUsers(query.type);
   }
 
+  /**
+   * Get parent's linked children (admin view)
+   */
+  async getParentChildren(parentId: string) {
+    // Verify parent exists and is a PARENT role
+    const parent = await this.repository.getUserById(parentId);
+    
+    if (!parent) {
+      throw new ApiError(404, 'المستخدم غير موجود');
+    }
+
+    if (parent.role !== Role.PARENT) {
+      throw new ApiError(400, 'هذا المستخدم ليس ولي أمر');
+    }
+
+    return this.repository.getParentChildren(parentId);
+  }
+
   // ─── Question Management ─────────────────────────────────────────────────────
 
   /**

@@ -23,6 +23,7 @@ router.get('/dashboard/points-distribution', controller.getPointsDistribution);
 // User management
 router.get('/users', controller.getUsers);
 router.get('/users/export', controller.exportUsers);
+router.get('/users/:parentId/children', controller.getParentChildren);
 router.put('/users/:id', validate(updateUserSchema), controller.updateUser);
 router.delete('/users/:id', controller.deleteUser);
 
