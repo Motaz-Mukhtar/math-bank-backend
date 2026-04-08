@@ -12,10 +12,27 @@ export class VideoCategoryController {
 
   /**
    * GET /api/v1/video-categories
-   * Get all categories with nested videos
+   * Get all categories with nested videos and pagination
+   * Query params: page, limit, search
    */
-  getAll = asyncHandler(async (_req: Request, res: Response) => {
-    const categories = await this.service.getAll();
+  getAll = asyncHandler(async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const search = req.query.search as string | undefined;
+
+    const result = await this.service.getAll(page, limit, search?.trim());
+
+    res.json(
+      new ApiResponse(200, result, 'تم جلب الفصول بنجاح')
+    );
+  });
+
+  /**
+   * GET /api/v1/video-categories/list/all
+   * Get all categories without pagination (for dropdowns)
+   */
+  getAllNoPagination = asyncHandler(async (_req: Request, res: Response) => {
+    const categories = await this.service.getAllNoPagination();
 
     res.json(
       new ApiResponse(200, categories, 'تم جلب الفصول بنجاح')

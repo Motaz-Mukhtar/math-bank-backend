@@ -10,21 +10,63 @@ export class VideoCategoryRepository {
   }
 
   /**
-   * Get all categories ordered by sortOrder, with nested videos
+   * Get all categories ordered by sortOrder, with nested videos and pagination
    */
-  async getAll() {
+  async getAll(skip: number = 0, take: number = 10, search?: string) {
+    const where: any = search
+      ? {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' } },
+            { description: { contains: search, mode: 'insensitive' } },
+          ],
+        }
+      : undefined;
+
     return this.prisma.videoCategory.findMany({
+      where,
       orderBy: {
         sortOrder: 'asc',
       },
       include: {
-        videos: {
-          orderBy: {
-            sortOrder: 'asc',
-          },
+        _count: {
+          select: { videos: true },
         },
       },
+      skip,
+      take,
     });
+  }
+
+  /**
+   * Get all categories without pagination (for dropdowns)
+   */
+  async getAllNoPagination() {
+    return this.prisma.videoCategory.findMany({
+      orderBy: {
+        sortOrder: 'asc',
+      },
+      select: {
+        id: true,
+        name: true,
+        sortOrder: true,
+      },
+    });
+  }
+
+  /**
+   * Count all categories
+   */
+  async count(search?: string) {
+    const where: any = search
+      ? {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' } },
+            { description: { contains: search, mode: 'insensitive' } },
+          ],
+        }
+      : undefined;
+
+    return this.prisma.videoCategory.count({ where });
   }
 
   /**

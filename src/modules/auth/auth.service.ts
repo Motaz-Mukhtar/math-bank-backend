@@ -47,6 +47,7 @@ export class AuthService {
       email: user.email,
       phone: user.phone,
       role: user.role,
+      points: user.points,
       academicNumber: user.academicNumber,
       isVerified: user.isVerified,
       createdAt: user.createdAt,
@@ -148,9 +149,9 @@ export class AuthService {
       dto.email.toLowerCase().trim()
     );
 
-    if (!user) {
+    console.log(user);
+    if (!user)
       throw new ApiError(401, 'البريد الإلكتروني أو كلمة المرور غير صحيحة');
-    }
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(
@@ -158,14 +159,12 @@ export class AuthService {
       user.passwordHash
     );
 
-    if (!isPasswordValid) {
+    if (!isPasswordValid)
       throw new ApiError(401, 'البريد الإلكتروني أو كلمة المرور غير صحيحة');
-    }
 
     // Check if verified
-    if (!user.isVerified) {
+    if (!user.isVerified)
       throw new ApiError(403, 'يرجى تفعيل حسابك أولاً');
-    }
 
     // Generate tokens
     const accessToken = generateAccessToken(user.id, user.role);

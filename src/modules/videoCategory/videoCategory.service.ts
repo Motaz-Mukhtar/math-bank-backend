@@ -10,10 +10,33 @@ export class VideoCategoryService {
   }
 
   /**
-   * Get all categories with videos
+   * Get all categories with videos and pagination
    */
-  async getAll() {
-    return this.repository.getAll();
+  async getAll(page: number = 1, limit: number = 10, search?: string) {
+    const skip = (page - 1) * limit;
+    
+    const [categories, total] = await Promise.all([
+      this.repository.getAll(skip, limit, search),
+      this.repository.count(search),
+    ]);
+
+    return {
+      categories,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Get all categories without pagination (for dropdowns)
+   */
+  async getAllNoPagination() {
+    const categories = await this.repository.getAllNoPagination();
+    return { categories };
   }
 
   /**

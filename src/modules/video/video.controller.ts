@@ -12,17 +12,27 @@ export class VideoController {
 
   /**
    * GET /api/v1/videos
-   * Get all videos with optional category filter
+   * Get all videos with optional category filter, search, and pagination
+   * Query params: categoryId, search, page, limit
    */
   getAll = asyncHandler(async (req: Request, res: Response) => {
     const categoryId = req.query.categoryId as string | undefined;
+    const search = req.query.search as string | undefined;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
 
-    const videos = await this.service.getAll(
-      categoryId ? { categoryId } : undefined
+    const filters: any = {};
+    if (categoryId) filters.categoryId = categoryId;
+    if (search?.trim()) filters.search = search.trim();
+
+    const result = await this.service.getAll(
+      Object.keys(filters).length > 0 ? filters : undefined,
+      page,
+      limit
     );
 
     res.json(
-      new ApiResponse(200, videos, 'تم جلب الفيديوهات بنجاح')
+      new ApiResponse(200, result, 'تم جلب الفيديوهات بنجاح')
     );
   });
 

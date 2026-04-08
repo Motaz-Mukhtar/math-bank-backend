@@ -13,9 +13,9 @@ export class VideoService {
   }
 
   /**
-   * Get all videos with optional filters
+   * Get all videos with optional filters and pagination
    */
-  async getAll(filters?: { categoryId?: string }) {
+  async getAll(filters?: { categoryId?: string; search?: string }, page: number = 1, limit: number = 10) {
     // If categoryId provided, verify it exists
     if (filters?.categoryId) {
       const category = await this.categoryRepository.getById(filters.categoryId);
@@ -24,7 +24,22 @@ export class VideoService {
       }
     }
 
-    return this.repository.getAll(filters);
+    const skip = (page - 1) * limit;
+    
+    const [videos, total] = await Promise.all([
+      this.repository.getAll(filters, skip, limit),
+      this.repository.count(filters),
+    ]);
+
+    return {
+      videos,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   /**

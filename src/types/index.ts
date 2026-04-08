@@ -6,6 +6,7 @@ export interface SafeUser {
   email: string;
   phone?: string | null;
   role: Role;
+  points: Number,
   academicNumber?: string | null;
   isVerified: boolean;
   createdAt: Date;

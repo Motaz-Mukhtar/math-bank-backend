@@ -4,6 +4,7 @@ import { CreateVideoDto, UpdateVideoDto } from './video.schema';
 
 interface GetAllFilters {
   categoryId?: string;
+  search?: string;
 }
 
 export class VideoRepository {
@@ -14,13 +15,24 @@ export class VideoRepository {
   }
 
   /**
-   * Get all videos with optional filters
+   * Get all videos with optional filters and pagination
    */
-  async getAll(filters?: GetAllFilters) {
+  async getAll(filters?: GetAllFilters, skip: number = 0, take: number = 10) {
+    const where: any = {};
+
+    if (filters?.categoryId) {
+      where.categoryId = filters.categoryId;
+    }
+
+    if (filters?.search) {
+      where.OR = [
+        { title: { contains: filters.search, mode: 'insensitive' } },
+        { description: { contains: filters.search, mode: 'insensitive' } },
+      ];
+    }
+
     return this.prisma.video.findMany({
-      where: filters?.categoryId
-        ? { categoryId: filters.categoryId }
-        : undefined,
+      where,
       orderBy: {
         sortOrder: 'asc',
       },
@@ -32,7 +44,29 @@ export class VideoRepository {
           },
         },
       },
+      skip,
+      take,
     });
+  }
+
+  /**
+   * Count videos with optional filters
+   */
+  async count(filters?: GetAllFilters) {
+    const where: any = {};
+
+    if (filters?.categoryId) {
+      where.categoryId = filters.categoryId;
+    }
+
+    if (filters?.search) {
+      where.OR = [
+        { title: { contains: filters.search, mode: 'insensitive' } },
+        { description: { contains: filters.search, mode: 'insensitive' } },
+      ];
+    }
+
+    return this.prisma.video.count({ where });
   }
 
   /**
