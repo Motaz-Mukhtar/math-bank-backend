@@ -9,6 +9,7 @@ import {
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  resendVerificationSchema,
 } from './auth.schema';
 
 const router = Router();
@@ -33,6 +34,7 @@ router.use(authLimiter);
 // Public routes
 router.post('/register', validate(registerSchema), controller.register);
 router.post('/verify-email', validate(verifyEmailSchema), controller.verifyEmail);
+router.post('/resend-verification', validate(resendVerificationSchema), controller.resendVerification);
 router.post('/login', validate(loginSchema), controller.login);
 router.post('/refresh', controller.refresh);
 router.post('/forgot-password', validate(forgotPasswordSchema), controller.forgotPassword);

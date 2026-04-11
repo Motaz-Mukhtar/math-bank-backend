@@ -6,6 +6,7 @@ import {
   LoginDto,
   ForgotPasswordDto,
   ResetPasswordDto,
+  ResendVerificationDto,
 } from './auth.schema';
 import { ApiError } from '../../utils/ApiError';
 import { SafeUser } from '../../types';
@@ -137,6 +138,36 @@ export class AuthService {
     await this.repository.markVerified(user.id);
 
     return this.toSafeUser({ ...user, isVerified: true });
+  }
+
+  /**
+   * Resend verification email
+   * Note: Returns success even if email doesn't exist to prevent user enumeration
+   */
+  async resendVerification(dto: ResendVerificationDto): Promise<void> {
+    const user = await this.repository.findByEmail(
+      dto.email.toLowerCase().trim()
+    );
+
+    // Don't reveal if email exists or not (prevent user enumeration)
+    if (!user) return;
+
+    // Don't reveal if account is already verified
+    if (user.isVerified) return;
+
+    // Generate new verification code
+    const verifyCode = this.generateCode();
+    const verifyCodeExp = new Date(
+      Date.now() + VERIFY_CODE_TTL_MINUTES * 60 * 1000
+    );
+
+    // Update user with new code
+    await this.repository.updateVerifyCode(user.id, verifyCode, verifyCodeExp);
+
+    // Send verification email (don't await - fire and forget)
+    sendVerificationEmail(user.email, verifyCode).catch((err) =>
+      console.error('Failed to send verification email:', err)
+    );
   }
 
   /**

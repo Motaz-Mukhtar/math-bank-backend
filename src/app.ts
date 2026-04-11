@@ -29,16 +29,8 @@ if (env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Health check endpoint
-app.get('/api/health', (_req: Request, res: Response) => {
-  res.json({
-    success: true,
-    message: 'Math Bank API is running',
-    timestamp: new Date().toISOString(),
-  });
-});
-
 // Register module routes
+import healthRoutes from './modules/health/health.routes';
 import authRoutes from './modules/auth/auth.routes';
 import userRoutes from './modules/user/user.routes';
 import leaderboardRoutes from './modules/leaderboard/leaderboard.routes';
@@ -49,6 +41,7 @@ import quizRoutes from './modules/quiz/quiz.routes';
 import parentRoutes from './modules/parent/parent.routes';
 import adminRoutes from './modules/admin/admin.routes';
 
+app.use('/api/v1/health', healthRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/leaderboard', leaderboardRoutes);

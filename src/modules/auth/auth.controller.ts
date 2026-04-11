@@ -35,6 +35,15 @@ export class AuthController {
   });
 
   /**
+   * POST /api/v1/auth/resend-verification
+   */
+  resendVerification = asyncHandler(async (req: Request, res: Response) => {
+    await this.service.resendVerification(req.body);
+
+    res.json(new ApiResponse(200, null, 'تم إرسال رمز التحقق بنجاح'));
+  });
+
+  /**
    * POST /api/v1/auth/login
    */
   login = asyncHandler(async (req: Request, res: Response) => {

@@ -47,8 +47,13 @@ export const resetPasswordSchema = z.object({
     .max(100, 'كلمة المرور الجديدة طويلة جداً'),
 });
 
+export const resendVerificationSchema = z.object({
+  email: z.string().email('البريد الإلكتروني غير صالح'),
+});
+
 export type RegisterDto = z.infer<typeof registerSchema>;
 export type VerifyEmailDto = z.infer<typeof verifyEmailSchema>;
 export type LoginDto = z.infer<typeof loginSchema>;
 export type ForgotPasswordDto = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordDto = z.infer<typeof resetPasswordSchema>;
+export type ResendVerificationDto = z.infer<typeof resendVerificationSchema>;
