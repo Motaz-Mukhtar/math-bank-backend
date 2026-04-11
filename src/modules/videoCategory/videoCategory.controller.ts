@@ -28,6 +28,19 @@ export class VideoCategoryController {
   });
 
   /**
+   * GET /api/v1/video-categories/videos
+   * Get all categories with their videos (no pagination)
+   * Returns: [{ categoryName: "", videos: [{}, {}, {}] }]
+   */
+  getVideosWithCategories = asyncHandler(async (_req: Request, res: Response) => {
+    const data = await this.service.getVideosWithCategories();
+
+    res.json(
+      new ApiResponse(200, data, 'تم جلب الفصول والفيديوهات بنجاح')
+    );
+  });
+
+  /**
    * GET /api/v1/video-categories/list/all
    * Get all categories without pagination (for dropdowns)
    */

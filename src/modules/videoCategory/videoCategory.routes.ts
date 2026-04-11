@@ -14,6 +14,7 @@ const controller = new VideoCategoryController();
 
 // Public routes (require authentication)
 router.get('/', authMiddleware, controller.getAll);
+router.get('/videos', authMiddleware, controller.getVideosWithCategories);
 router.get('/list/all', authMiddleware, controller.getAllNoPagination);
 router.get('/:id', authMiddleware, controller.getById);
 

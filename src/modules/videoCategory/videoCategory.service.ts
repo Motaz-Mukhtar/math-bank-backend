@@ -92,4 +92,14 @@ export class VideoCategoryService {
 
     return { message: 'تم حذف الفصل بنجاح' };
   }
+
+  /**
+   * Get all categories with their videos (no pagination)
+   * Returns data formatted for displaying videos grouped by category
+   */
+  async getVideosWithCategories() {
+    const categories = await this.repository.getAllWithVideos();
+
+    return categories;
+  }
 }

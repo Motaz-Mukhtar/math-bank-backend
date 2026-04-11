@@ -144,4 +144,23 @@ export class VideoCategoryRepository {
       },
     });
   }
+
+  /**
+   * Get all categories with their videos (no pagination)
+   * For displaying videos grouped by category
+   */
+  async getAllWithVideos() {
+    return this.prisma.videoCategory.findMany({
+      orderBy: {
+        sortOrder: 'asc',
+      },
+      include: {
+        videos: {
+          orderBy: {
+            sortOrder: 'asc',
+          },
+        },
+      },
+    });
+  }
 }
