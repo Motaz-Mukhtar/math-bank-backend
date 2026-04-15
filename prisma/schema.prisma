@@ -72,6 +72,7 @@ model User {
   wheelSessions    WheelSession[]
   parentLinks      ParentChild[] @relation("ParentSide")
   childLinks       ParentChild[] @relation("ChildSide")
+  videoProgress    VideoProgress[]
 }
 
 // ─── Parent–Child Link ───────────────────────────────
@@ -122,6 +123,31 @@ model Video {
   category    VideoCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+
+  progress    VideoProgress[]
+}
+
+// ─── Video Progress Tracking ─────────────────────────
+
+model VideoProgress {
+  id              String    @id @default(uuid())
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
+  video           Video     @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoId         String
+  watchedDuration Int       @default(0) // in seconds
+  totalDuration   Int       @default(0) // in seconds
+  progressPercent Int       @default(0) // 0-100
+  isCompleted     Boolean   @default(false)
+  completedAt     DateTime?
+  lastWatchedAt   DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([userId, videoId])
+  @@index([userId])
+  @@index([videoId])
+  @@index([userId, isCompleted])
 }
 
 // ─── Questions ───────────────────────────────────────

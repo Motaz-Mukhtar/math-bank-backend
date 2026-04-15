@@ -12,7 +12,8 @@
     "test:ui": "vitest --ui",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:migrate:name": "prisma migrate dev --name",
+    "prisma:migrate:create": "prisma migrate dev --create-only",
+    "prisma:pull": "prisma db pull",
     "prisma:studio": "prisma studio"
   },
   "keywords": [
