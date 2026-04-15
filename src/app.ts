@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import { env } from './config/env';
 import { errorMiddleware } from './middleware/error.middleware';
@@ -10,6 +11,18 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
+
+// Compression middleware (gzip/brotli)
+app.use(compression({
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  },
+  threshold: 1024, // Only compress responses > 1KB
+  level: 6, // Compression level (0-9, 6 is default balance)
+}));
 
 // CORS configuration
 app.use(
@@ -28,6 +41,18 @@ app.use(cookieParser());
 if (env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+// Response time monitoring middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    if (duration > 300) {
+      console.warn(`⚠️  Slow endpoint: ${req.method} ${req.path} — ${duration}ms`);
+    }
+  });
+  next();
+});
 
 // Register module routes
 import healthRoutes from './modules/health/health.routes';

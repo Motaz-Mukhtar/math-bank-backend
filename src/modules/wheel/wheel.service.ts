@@ -1,6 +1,8 @@
 import { WheelRepository } from './wheel.repository';
 import { SpinDto, SubmitAnswerDto } from './wheel.schema';
 import { ApiError } from '../../utils/ApiError';
+import { cacheService } from '../../services/cache.service';
+import { CachePatterns } from '../../constants';
 
 // Wheel quiz always awards 10 points per correct answer
 const WHEEL_POINTS_PER_CORRECT = 10;
@@ -100,6 +102,12 @@ export class WheelService {
       isCorrect,
       pointsEarned,
     });
+
+    // Invalidate leaderboard cache when points are updated
+    if (pointsEarned > 0) {
+      cacheService.delPattern(CachePatterns.LEADERBOARD);
+      console.log('🔄 Cache invalidated: leaderboard (points updated)');
+    }
 
     return {
       isCorrect,

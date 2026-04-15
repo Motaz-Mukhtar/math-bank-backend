@@ -19,9 +19,8 @@ export class UserService {
 
     // Get rank for students
     let rank: number | null = null;
-    if (user.role === Role.STUDENT) {
+    if (user.role === Role.STUDENT)
       rank = await this.userRepository.getUserRank(userId);
-    }
 
     // Format response
     return {

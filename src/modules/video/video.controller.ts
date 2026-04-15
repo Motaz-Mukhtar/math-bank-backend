@@ -31,6 +31,9 @@ export class VideoController {
       limit
     );
 
+    // Cache for 3 minutes (videos don't change often)
+    res.setHeader('Cache-Control', 'public, max-age=180');
+
     res.json(
       new ApiResponse(200, result, 'تم جلب الفيديوهات بنجاح')
     );
@@ -42,6 +45,9 @@ export class VideoController {
    */
   getById = asyncHandler(async (req: Request, res: Response) => {
     const video = await this.service.getById(req.params.id);
+
+    // Cache for 5 minutes
+    res.setHeader('Cache-Control', 'public, max-age=300');
 
     res.json(
       new ApiResponse(200, video, 'تم جلب الفيديو بنجاح')

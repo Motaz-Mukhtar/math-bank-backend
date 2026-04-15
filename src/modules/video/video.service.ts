@@ -2,6 +2,8 @@ import { VideoRepository } from './video.repository';
 import { VideoCategoryRepository } from '../videoCategory/videoCategory.repository';
 import { CreateVideoDto, UpdateVideoDto, MoveVideoDto } from './video.schema';
 import { ApiError } from '../../utils/ApiError';
+import { cacheService } from '../../services/cache.service';
+import { CachePatterns } from '../../constants';
 
 export class VideoService {
   private repository: VideoRepository;
@@ -65,7 +67,13 @@ export class VideoService {
       throw new ApiError(404, 'الفصل غير موجود');
     }
 
-    return this.repository.create(data);
+    const result = await this.repository.create(data);
+
+    // Invalidate video cache
+    cacheService.delPattern(CachePatterns.VIDEO);
+    console.log('🔄 Cache invalidated: videos (video created)');
+
+    return result;
   }
 
   /**
@@ -83,7 +91,13 @@ export class VideoService {
       }
     }
 
-    return this.repository.update(id, data);
+    const result = await this.repository.update(id, data);
+
+    // Invalidate video cache
+    cacheService.delPattern(CachePatterns.VIDEO);
+    console.log('🔄 Cache invalidated: videos (video updated)');
+
+    return result;
   }
 
   /**
@@ -98,6 +112,10 @@ export class VideoService {
 
     // Reorder remaining videos in the same category
     await this.repository.reorderAfterDelete(video.categoryId, video.sortOrder);
+
+    // Invalidate video cache
+    cacheService.delPattern(CachePatterns.VIDEO);
+    console.log('🔄 Cache invalidated: videos (video deleted)');
 
     return { message: 'تم حذف الفيديو بنجاح' };
   }
@@ -115,6 +133,12 @@ export class VideoService {
       throw new ApiError(404, 'الفصل الجديد غير موجود');
     }
 
-    return this.repository.moveToCategory(id, data.categoryId);
+    const result = await this.repository.moveToCategory(id, data.categoryId);
+
+    // Invalidate video cache
+    cacheService.delPattern(CachePatterns.VIDEO);
+    console.log('🔄 Cache invalidated: videos (video moved)');
+
+    return result;
   }
 }

@@ -35,6 +35,9 @@ export class VideoCategoryController {
   getVideosWithCategories = asyncHandler(async (_req: Request, res: Response) => {
     const data = await this.service.getVideosWithCategories();
 
+    // Cache for 5 minutes (categories with videos don't change often)
+    res.setHeader('Cache-Control', 'public, max-age=300');
+
     res.json(
       new ApiResponse(200, data, 'تم جلب الفصول والفيديوهات بنجاح')
     );

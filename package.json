@@ -12,6 +12,7 @@
     "test:ui": "vitest --ui",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "prisma:migrate:name": "prisma migrate dev --name",
     "prisma:studio": "prisma studio"
   },
   "keywords": [
@@ -25,7 +26,9 @@
   "license": "MIT",
   "dependencies": {
     "@prisma/client": "^5.19.1",
+    "@types/compression": "^1.8.1",
     "bcryptjs": "^2.4.3",
+    "compression": "^1.8.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.1",
@@ -35,7 +38,8 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "mysql2": "^3.9.1",
-    "nodemailer": "^6.9.9",
+    "node-cache": "^5.1.2",
+    "nodemailer": "^8.0.5",
     "zod": "^3.22.4"
   },
   "devDependencies": {

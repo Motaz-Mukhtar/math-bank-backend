@@ -1,6 +1,8 @@
 import { PrismaClient, VideoCategory } from '@prisma/client';
 import { prisma } from '../../config/database';
 import { CreateVideoCategoryDto, UpdateVideoCategoryDto } from './videoCategory.schema';
+import { cacheService } from '../../services/cache.service';
+import { CacheKeys, CacheTTL } from '../../constants';
 
 export class VideoCategoryRepository {
   private prisma: PrismaClient;
@@ -150,7 +152,14 @@ export class VideoCategoryRepository {
    * For displaying videos grouped by category
    */
   async getAllWithVideos() {
-    return this.prisma.videoCategory.findMany({
+    // Check cache first
+    const cacheKey = CacheKeys.videosWithCategories();
+    const cached = cacheService.get<any[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const result = await this.prisma.videoCategory.findMany({
       orderBy: {
         sortOrder: 'asc',
       },
@@ -162,5 +171,9 @@ export class VideoCategoryRepository {
         },
       },
     });
+
+    // Cache for 5 minutes
+    cacheService.set(cacheKey, result, CacheTTL.VIDEO_CATEGORIES);
+    return result;
   }
 }

@@ -2,6 +2,8 @@ import { QuizRepository } from './quiz.repository';
 import { StartSessionDto, SubmitAnswerDto } from './quiz.schema';
 import { ApiError } from '../../utils/ApiError';
 import { validateAnswer } from './quiz.validator';
+import { cacheService } from '../../services/cache.service';
+import { CachePatterns } from '../../constants';
 
 // Quiz session always has 10 questions
 const QUIZ_SESSION_LENGTH = 10;
@@ -151,6 +153,12 @@ export class QuizService {
       isCorrect,
       pointsEarned,
     });
+
+    // Invalidate leaderboard cache when points are updated
+    if (pointsEarned > 0) {
+      cacheService.delPattern(CachePatterns.LEADERBOARD);
+      console.log('🔄 Cache invalidated: leaderboard (points updated)');
+    }
 
     // Check if session is complete (all 10 questions answered)
     const isSessionComplete = answeredQuestionIds.length + 1 >= QUIZ_SESSION_LENGTH;

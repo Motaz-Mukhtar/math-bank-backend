@@ -1,6 +1,8 @@
 import { PrismaClient, Role, QuizCategory } from '@prisma/client';
 import { prisma } from '../../config/database';
 import { LeaderboardEntry, CurrentUserRank } from '../../types';
+import { cacheService } from '../../services/cache.service';
+import { CacheKeys, CacheTTL } from '../../constants';
 
 function getWeekStart(): Date {
   const now = new Date();
@@ -22,6 +24,12 @@ export class LeaderboardRepository {
   // ─── Top students (main page) ───────────────────────────────────────────────
 
   async getTopStudents(limit = 10): Promise<LeaderboardEntry[]> {
+    // Check cache first
+    const cacheKey = CacheKeys.leaderboardTop(limit);
+    const cached = cacheService.get<LeaderboardEntry[]>(cacheKey);
+
+    if (cached) return cached;
+
     const students = await this.prisma.user.findMany({
       where: { role: Role.STUDENT, isVerified: true },
       select: {
@@ -34,13 +42,18 @@ export class LeaderboardRepository {
       take: limit,
     });
 
-    return students.map((s: any, i: number) => ({
+    const result = students.map((s: any, i: number) => ({
       rank: i + 1,
       userId: s.id,
       fullName: s.fullName,
       academicNumber: s.academicNumber,
       points: s.points?.total || 0,
     }));
+
+    // Cache for 60 seconds
+    cacheService.set(cacheKey, result, CacheTTL.LEADERBOARD_TOP);
+
+    return result;
   }
 
   // ─── Full paginated leaderboard ─────────────────────────────────────────────
@@ -49,6 +62,12 @@ export class LeaderboardRepository {
     page: number,
     limit: number
   ): Promise<{ entries: LeaderboardEntry[]; total: number }> {
+    // Check cache first
+    const cacheKey = `${CacheKeys.leaderboardFull('all')}:${page}:${limit}`;
+    const cached = cacheService.get<{ entries: LeaderboardEntry[]; total: number }>(cacheKey);
+
+    if (cached) return cached;
+
     const skip = (page - 1) * limit;
 
     const [students, total] = await Promise.all([
@@ -75,7 +94,11 @@ export class LeaderboardRepository {
       points: s.points?.total || 0,
     }));
 
-    return { entries, total };
+    const result = { entries, total };
+    
+    // Cache for 30 seconds
+    cacheService.set(cacheKey, result, CacheTTL.LEADERBOARD_FULL);
+    return result;
   }
 
   // ─── Weekly paginated leaderboard ──────────────────────────────────────────
